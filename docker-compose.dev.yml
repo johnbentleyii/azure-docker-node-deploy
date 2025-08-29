@@ -1,0 +1,20 @@
+services:
+# Change name to uniquely identify your Node application
+  app:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.dev
+      args:
+        PACKAGE_PATH: ${PACKAGE_PATH} # Set in .env file
+        SOURCE_DIR: ${SOURCE_DIR}     # Set in .env file
+    ports:
+      - "${APP_PORT}:3000"            # Set in .env file
+      - "${DEBUG_PORT}:9229"          # Set in .env file
+    volumes:
+      - ${SOURCE_DIR}:/usr/src/app
+      - /usr/src/app/node_modules
+    environment:
+      - NODE_ENV=development
+      - SOURCE_DIR=${SOURCE_DIR}
+      - CHOKIDAR_USEPOLLING=true
+    command: nodemon --inspect=0.0.0.0:9229 ${STARTUP_SCRIPT}
