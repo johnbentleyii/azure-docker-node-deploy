@@ -22,7 +22,7 @@
 ### 2. Create Service Principal & Set GitHub Secrets via Azure Portal
 
 **a. Create Service Principal:**
-1. In the Portal, search for “Azure Active Directory.”
+1. In the Portal, search for “Microsoft Entra ID” (formerly Azure Active Directory).
 2. Go to “App registrations” > “New registration.”
 3. Name your app (e.g., github-actions-deploy) and register.
 4. After registration, go to “Certificates & secrets” > “New client secret.” Copy the value.
@@ -35,10 +35,12 @@
 
 **c. Add GitHub Secrets:**
 - In your GitHub repo, go to “Settings” > “Secrets and variables” > “Actions.”
+- Add to the environment the secrets match
 - Add the following secrets:
 	- `AZURE_CREDENTIALS` (JSON with clientId, clientSecret, tenantId, subscriptionId)
+- Add the following environment variables:
 	- `AZURE_WEBAPP_NAME`
-	- `AZURE_ACR_NAME`
+	- `AZURE_ACR_NAME` (Azure Container Repository name)
 	- `AZURE_RESOURCE_GROUP`
 	- `AZURE_SUBSCRIPTION_ID`
 
@@ -69,8 +71,9 @@
 
 - **Add these as GitHub secrets:**
 	- `AZURE_CREDENTIALS` (JSON output from above)
+- Add the following environment variables:
 	- `AZURE_WEBAPP_NAME`
-	- `AZURE_ACR_NAME`
+	- `AZURE_ACR_NAME` (Azure Container Repository name)
 	- `AZURE_RESOURCE_GROUP`
 	- `AZURE_SUBSCRIPTION_ID`
 
@@ -78,7 +81,7 @@
 
 ### 3. Add GitHub Actions Workflow
 
-Create `.github/workflows/azure-deploy.yml`:
+Create `.github/workflows/azure-deploy.yml`, and make sure the environment is the same as the name you use in settings:
 
 ```yaml
 name: Build and Deploy to Azure Web App for Containers
@@ -91,6 +94,7 @@ on:
 jobs:
 	build-and-deploy:
 		runs-on: ubuntu-latest
+        environment: production
 
 		steps:
 		- name: Checkout code
@@ -104,8 +108,8 @@ jobs:
 		- name: Log in to Azure Container Registry
 			uses: azure/docker-login@v2
 			with:
-				login-server: ${{ secrets.AZURE_ACR_NAME }}.azurecr.io
-				username: ${{ secrets.AZURE_ACR_NAME }}
+				login-server: ${{ env.AZURE_ACR_NAME }}.azurecr.io
+				username: ${{ env.AZURE_ACR_NAME }}
 				password: ${{ secrets.AZURE_CREDENTIALS }}
 
 		- name: Build and push Docker image
@@ -117,7 +121,7 @@ jobs:
 			uses: azure/webapps-deploy@v3
 			with:
 				app-name: ${{ secrets.AZURE_WEBAPP_NAME }}
-				images: ${{ secrets.AZURE_ACR_NAME }}.azurecr.io/app:${{ github.sha }}
+				images: ${{ env.AZURE_ACR_NAME }}.azurecr.io/app:${{ github.sha }}
 ```
 
 ---

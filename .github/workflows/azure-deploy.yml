@@ -8,6 +8,12 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    environment: deploydev
+    env:
+      AZURE_WEBAPP_NAME: <your-webapp-name>
+      AZURE_ACR_NAME: <your-acr-name>
+      AZURE_RESOURCE_GROUP: <your-resource-group>
+      AZURE_SUBSCRIPTION_ID: <your-subscription-id>
 
     steps:
     - name: Checkout code
@@ -21,17 +27,15 @@ jobs:
     - name: Log in to Azure Container Registry
       uses: azure/docker-login@v2
       with:
-        login-server: ${{ secrets.AZURE_ACR_NAME }}.azurecr.io
-        username: ${{ secrets.AZURE_ACR_NAME }}
-        password: ${{ secrets.AZURE_CREDENTIALS }}
+        login-server: ${{ env.AZURE_ACR_NAME }}.azurecr.io
 
     - name: Build and push Docker image
       run: |
-        docker build -f docker/Dockerfile -t ${{ secrets.AZURE_ACR_NAME }}.azurecr.io/app:${{ github.sha }} .
-        docker push ${{ secrets.AZURE_ACR_NAME }}.azurecr.io/app:${{ github.sha }}
+        docker build -f docker/Dockerfile -t ${{ env.AZURE_ACR_NAME }}.azurecr.io/app:${{ github.sha }} .
+        docker push ${{ env.AZURE_ACR_NAME }}.azurecr.io/app:${{ github.sha }}
 
     - name: Deploy to Azure Web App
       uses: azure/webapps-deploy@v3
       with:
-        app-name: ${{ secrets.AZURE_WEBAPP_NAME }}
-        images: ${{ secrets.AZURE_ACR_NAME }}.azurecr.io/app:${{ github.sha }}
+        app-name: ${{ env.AZURE_WEBAPP_NAME }}
+        images: ${{ env.AZURE_ACR_NAME }}.azurecr.io/app:${{ github.sha }}
