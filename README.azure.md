@@ -6,12 +6,12 @@
 
 **a. Create Azure Container Registry (ACR):**
 1. Go to the Azure Portal: https://portal.azure.com
-2. Search for “Container Registries” and click “Create.”
+2. Search for “Container Registries” and click “Create”
 3. Fill in the Resource Group, Registry Name, and select SKU (e.g., Basic).
 4. Click “Review + create” and then “Create.”
 
 **b. Create Azure Web App for Containers:**
-1. In the Portal, search for “Web App” and click “Create.”
+1. In the Portal, search for “App Services” and click “Create - Web App”
 2. Fill in the Resource Group, App Name, and select “Docker Container” for Publish.
 3. Under “Docker,” set the image source to “Azure Container Registry.”
 4. Select your registry and specify the image and tag.
