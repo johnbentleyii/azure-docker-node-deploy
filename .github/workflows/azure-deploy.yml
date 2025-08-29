@@ -9,11 +9,6 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     environment: deploydev
-    env:
-      AZURE_WEBAPP_NAME: <your-webapp-name>
-      AZURE_ACR_NAME: <your-acr-name>
-      AZURE_RESOURCE_GROUP: <your-resource-group>
-      AZURE_SUBSCRIPTION_ID: <your-subscription-id>
 
     steps:
     - name: Checkout code
