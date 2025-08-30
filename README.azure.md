@@ -23,26 +23,33 @@
 
 **a. Create Service Principal:**
 1. In the Portal, search for “Microsoft Entra ID” (formerly Azure Active Directory).
-2. Go to “App registrations” > “New registration.”
-3. Name your app (e.g., github-actions-deploy) and register.
-4. After registration, go to “Certificates & secrets” > “New client secret.” Copy the value.
-5. Go to “Overview” to get the Application (client) ID and Directory (tenant) ID.
+1. Go to “App registrations” > “New registration.”
+1. Name your app (e.g., github-actions-deploy) and register.
+1. After registration, go to “Certificates & secrets” > “New client secret.” Copy the value.
+1. Go to “Overview” to get the Application (client) ID and Directory (tenant) ID.
 
-**b. Assign Role:**
+**b. Assign Role to Resource Group:**
 1. Go to your Resource Group.
-2. Click “Access control (IAM)” > “Add” > “Add role assignment.”
-3. Select “Contributor” and assign it to your registered app.
+1. Click “Access control (IAM)” > “Add” > “Add role assignment.”
+1. Select “Website Contributor” and assign it to your registered app.
 
-**c. Add GitHub Secrets:**
-- In your GitHub repo, go to “Settings” > “Secrets and variables” > “Actions.”
-- Add to the environment the secrets match
+**c. Assign Role to Azure Container Registry:**
+1. Go to your Azure Container Registry
+1. Click “Access control (IAM)” > “Add” > “Add role assignment”
+1. Select "Acr Pull" and assign it to your registered app.
+1. Click “Access control (IAM)” > “Add” > “Add role assignment”
+1. Select "Acr Push" and assign it to your registered app.
+
+**c. Add GitHub Environment:**
+- In your GitHub repo, go to “Settings” > “Environments” > “Actions”
+- Add the environment you are deploying to and 
 - Add the following secrets:
 	- `AZURE_CREDENTIALS` (JSON with clientId, clientSecret, tenantId, subscriptionId)
 - Add the following environment variables:
+	- `AZURE_ACR_LOGIN_SERVER` (Azure Container Repository Login Server URL)
+    - `AZURE_ACR_USERNAME` (Same as clientId - can use admin login)
+    - `AZURE_ACR_SECERET` (Same as clientServer - can use admin login)
 	- `AZURE_WEBAPP_NAME`
-	- `AZURE_ACR_NAME` (Azure Container Repository name)
-	- `AZURE_RESOURCE_GROUP`
-	- `AZURE_SUBSCRIPTION_ID`
 
 ---
 
@@ -68,14 +75,16 @@
 	```sh
 	az ad sp create-for-rbac --name "github-actions-deploy" --role contributor --scopes /subscriptions/<SUBSCRIPTION_ID>/resourceGroups/<ResourceGroup>
 	```
-
-- **Add these as GitHub secrets:**
-	- `AZURE_CREDENTIALS` (JSON output from above)
+**Add GitHub Environemnt:** 
+- In your GitHub repo, go to “Settings” > “Environments” > “Actions”
+- Add the environment you are deploying to and 
+- Add the following secrets:
+	- `AZURE_CREDENTIALS` (JSON with clientId, clientSecret, tenantId, subscriptionId)
 - Add the following environment variables:
+	- `AZURE_ACR_LOGIN_SERVER` (Azure Container Repository Login Server URL)
+    - `AZURE_ACR_USERNAME` (Same as clientId - can use admin login)
+    - `AZURE_ACR_SECERET` (Same as clientServer - can use admin login)
 	- `AZURE_WEBAPP_NAME`
-	- `AZURE_ACR_NAME` (Azure Container Repository name)
-	- `AZURE_RESOURCE_GROUP`
-	- `AZURE_SUBSCRIPTION_ID`
 
 ---
 

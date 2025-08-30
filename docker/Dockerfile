@@ -4,7 +4,7 @@ WORKDIR /usr/src/app
 
 # Copy package files and install only production dependencies
 COPY package*.json ./
-RUN npm install --production
+RUN npm install --omit=dev
 
 # Copy the rest of the app source
 COPY . ./
