@@ -45,10 +45,10 @@
 - Add the environment you are deploying to and 
 - Add the following secrets:
 	- `AZURE_CREDENTIALS` (JSON with clientId, clientSecret, tenantId, subscriptionId)
+    - `AZURE_ACR_PASSWORD` (Same as clientSecret - can use admin login)
 - Add the following environment variables:
 	- `AZURE_ACR_LOGIN_SERVER` (Azure Container Repository Login Server URL)
     - `AZURE_ACR_USERNAME` (Same as clientId - can use admin login)
-    - `AZURE_ACR_SECERET` (Same as clientServer - can use admin login)
 	- `AZURE_WEBAPP_NAME`
 
 ---
@@ -80,10 +80,10 @@
 - Add the environment you are deploying to and 
 - Add the following secrets:
 	- `AZURE_CREDENTIALS` (JSON with clientId, clientSecret, tenantId, subscriptionId)
+    - `AZURE_ACR_PASSWORD` (Same as clientServer - can use admin login)
 - Add the following environment variables:
 	- `AZURE_ACR_LOGIN_SERVER` (Azure Container Repository Login Server URL)
     - `AZURE_ACR_USERNAME` (Same as clientId - can use admin login)
-    - `AZURE_ACR_SECERET` (Same as clientServer - can use admin login)
 	- `AZURE_WEBAPP_NAME`
 
 ---
