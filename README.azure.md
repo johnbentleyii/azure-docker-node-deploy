@@ -71,10 +71,18 @@
 
 ### 2. Create Azure Service Principal & Set GitHub Secrets
 
-- **Create Service Principal:**
-	```sh
-	az ad sp create-for-rbac --name "github-actions-deploy" --role contributor --scopes /subscriptions/<SUBSCRIPTION_ID>/resourceGroups/<ResourceGroup>
-	```
+**Create Service Principal and Assign Contributor Role:**
+```sh
+az ad sp create-for-rbac --name "github-actions-deploy" --role contributor --scopes /subscriptions/<SUBSCRIPTION_ID>/resourceGroups/<ResourceGroup>
+```
+
+**Assign AcrPull and AcrPush Roles to Azure Container Registry:**
+```sh
+az role assignment create --assignee <APP_ID> --role "AcrPull" --scope /subscriptions/<SUBSCRIPTION_ID>/resourceGroups/<ResourceGroup>/providers/Microsoft.ContainerRegistry/registries/<ACR_NAME>
+az role assignment create --assignee <APP_ID> --role "AcrPush" --scope /subscriptions/<SUBSCRIPTION_ID>/resourceGroups/<ResourceGroup>/providers/Microsoft.ContainerRegistry/registries/<ACR_NAME>
+```
+Replace `<APP_ID>` with your service principal's Application (client) ID, `<SUBSCRIPTION_ID>` with your subscription ID, `<ResourceGroup>` with your resource group name, and `<ACR_NAME>` with your Azure Container Registry name.
+
 **Add GitHub Environemnt:** 
 - In your GitHub repo, go to “Settings” > “Environments” > “Actions”
 - Add the environment you are deploying to and 
@@ -117,20 +125,20 @@ jobs:
 		- name: Log in to Azure Container Registry
 			uses: azure/docker-login@v2
 			with:
-				login-server: ${{ env.AZURE_ACR_NAME }}.azurecr.io
-				username: ${{ env.AZURE_ACR_NAME }}
-				password: ${{ secrets.AZURE_CREDENTIALS }}
+				login-server: ${{ vars.AZURE_ACR_LOGIN_SERVER }}
+				username: ${{ vars.AZURE_ACR_USERNAME }}
+				password: ${{ secrets.AZURE_ACR_PASSWORD }}
 
 		- name: Build and push Docker image
 			run: |
-				docker build -t ${{ secrets.AZURE_ACR_NAME }}.azurecr.io/app:${{ github.sha }} .
-				docker push ${{ secrets.AZURE_ACR_NAME }}.azurecr.io/app:${{ github.sha }}
+				docker build -t ${{ vars.AZURE_ACR_LOGIN_SERVER }}/app:${{ github.sha }} .
+				docker push ${{ vars.AZURE_ACR_LOGIN_SERVER }}/app:${{ github.sha }}
 
 		- name: Deploy to Azure Web App
 			uses: azure/webapps-deploy@v3
 			with:
-				app-name: ${{ secrets.AZURE_WEBAPP_NAME }}
-				images: ${{ env.AZURE_ACR_NAME }}.azurecr.io/app:${{ github.sha }}
+				app-name: ${{ vars.AZURE_WEBAPP_NAME }}
+				images: ${{ vars.AZURE_ACR_LOGIN_SERVER }}/app:${{ github.sha }}
 ```
 
 ---
